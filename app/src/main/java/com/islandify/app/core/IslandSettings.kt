@@ -144,6 +144,10 @@ object IslandSettings {
     val islandAppAccent = MutableStateFlow(false)                // island glow uses the app accent instead of album art
     val autoCollapseSec = MutableStateFlow(6)                    // expanded card collapses by itself (0 = never)
     val idlePill = MutableStateFlow(true)                        // small pill stays on screen when idle (tap = time / date / battery)
+    // Fork hiemz: idle island is a round dot matching the Pixel 7a's circular
+    // punch-hole camera, not an iPhone-style pill. Only the idle Compact
+    // state is round; banners / cards still expand to their normal shapes.
+    val roundIdle = MutableStateFlow(true)
     val swipeSkip = MutableStateFlow(true)                       // swipe left/right on the island to skip tracks
     val stickyNotif = MutableStateFlow(false)                    // notifications stay on the island until tapped / swiped away
     val swipeUp = MutableStateFlow(SwipeAction.Dismiss)
@@ -213,6 +217,7 @@ object IslandSettings {
             swipeRight.value = SwipeAction.None
         }
         idlePill.value = p.getBoolean("idlePill", true)
+        roundIdle.value = p.getBoolean("roundIdle", true)
         onboarded.value = p.getBoolean("onboarded", false)
         enabled.value = p.getBoolean("enabled", true)
     }
@@ -245,6 +250,7 @@ object IslandSettings {
             ?.putString("swipeLeft", swipeLeft.value.key)
             ?.putString("swipeRight", swipeRight.value.key)
             ?.putBoolean("idlePill", idlePill.value)
+            ?.putBoolean("roundIdle", roundIdle.value)
             ?.putBoolean("onboarded", onboarded.value)
             ?.putBoolean("enabled", enabled.value)
             ?.apply()
@@ -326,6 +332,7 @@ object IslandSettings {
         swipeLeft.value = SwipeAction.NextTrack
         swipeRight.value = SwipeAction.PrevTrack
         idlePill.value = true
+        roundIdle.value = true
         islandAppAccent.value = false
         theme.value = 0
         accentSource.value = 0

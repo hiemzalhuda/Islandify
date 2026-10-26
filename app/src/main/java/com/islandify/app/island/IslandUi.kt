@@ -288,15 +288,25 @@ private fun IslandBody(
         IslandLevel.Banner -> bs.h   // own height for each banner type
         else -> heightScale * bs.cardH
     })
+    // Fork hiemz (Pixel 7a): idle Compact is a round dot matching the circular
+    // punch-hole camera. Width is forced to height, so the pill's full-round
+    // corner (height/2) becomes a true circle. Any real activity (notification,
+    // music, call, ...) keeps its long rounded pill / banner / card shape, and
+    // the width animates between the two, so the dot morphs into the pill.
+    val roundIdle by IslandSettings.roundIdle.collectAsState()
+    val isRoundIdle = roundIdle && mode is IslandMode.Idle && lvl == IslandLevel.Compact
+    val finalW = if (isRoundIdle) targetH else targetW
 
     // Higher animSpeed = faster spring
     val spec = spring<Dp>(
         dampingRatio = 0.8f,
         stiffness = (Spring.StiffnessMedium * 1.6f * animSpeed).coerceIn(300f, 6000f)
     )
-    val width by animateDpAsState(targetW, spec, label = "w")
+    val width by animateDpAsState(finalW, spec, label = "w")
     val height by animateDpAsState(targetH, spec, label = "h")
-    val cf = if (bs.corner >= 0f) bs.corner else cornerFactor
+    // Round idle ignores the roundness slider: a square with a smaller corner
+    // would be a rounded square, not the camera-matching circle.
+    val cf = if (isRoundIdle) 1f else if (bs.corner >= 0f) bs.corner else cornerFactor
     val corner = (height / 2 * cf).coerceIn(12.dp, 46.dp)
     val shape = RoundedCornerShape(corner)
 

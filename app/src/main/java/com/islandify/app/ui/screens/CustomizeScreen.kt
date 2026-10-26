@@ -61,6 +61,7 @@ fun CustomizeScreen() {
     val swRight by IslandSettings.swipeRight.collectAsState()
     val stickyNotif by IslandSettings.stickyNotif.collectAsState()
     val idlePill by IslandSettings.idlePill.collectAsState()
+    val roundIdle by IslandSettings.roundIdle.collectAsState()
     val dynamicOk = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
     fun nudge(dx: Float, dy: Float) {
@@ -99,6 +100,11 @@ fun CustomizeScreen() {
             SettingSlider(
                 stringResource(R.string.cust_roundness), Icons.Rounded.RoundedCorner, "${(corner * 100).toInt()}%",
                 corner, 0.2f..1f, { IslandSettings.corner.value = it }, { IslandSettings.save() }
+            )
+            ToggleRow(
+                icon = Icons.Rounded.Circle, title = "Round idle dot (Pixel camera)",
+                subtitle = "Idle island is a circle like the Pixel 7a punch-hole; notifications still expand to a long rounded pill",
+                checked = roundIdle, onChange = { IslandSettings.roundIdle.value = it; IslandSettings.save() }
             )
         }
 
